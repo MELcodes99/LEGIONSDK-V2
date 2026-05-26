@@ -33,8 +33,8 @@ npm install legion-sdk
 Or clone this repo directly:
 
 ```bash
-git clone .git
-cd Legion-SDK
+git clone https://github.com/MELcodes99/LEGIONSDK-V2.git
+cd LEGIONSDK-V2
 npm install
 ```
 
