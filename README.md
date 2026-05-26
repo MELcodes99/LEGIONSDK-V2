@@ -34,7 +34,7 @@ Or clone this repo directly:
 
 ```bash
 git clone https://github.com/MELcodes99/LEGIONSDK-V2.git
-cd Legion-SDK
+cd LEGIONSDK-V2
 npm install
 ```
 
