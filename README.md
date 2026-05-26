@@ -112,7 +112,7 @@ const legion = LegionSDK.fromPrivateKey({
   rpcUrl: "https://api.mainnet-beta.solana.com",
   relayerPrivateKey: "PASTE_YOUR_PRIVATE_KEY_HERE",
   fee: {
-    mint: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", // USDC — change to your token
+    mint: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
     amount: 0.01,
     decimals: 6,
   },
