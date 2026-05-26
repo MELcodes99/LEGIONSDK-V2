@@ -33,8 +33,8 @@ npm install legion-sdk
 Or clone this repo directly:
 
 ```bash
-git clone https://github.com/MELcodes99/LEGIONSDK-V2.git
-cd LEGIONSDK-V2
+git clone .git
+cd Legion-SDK
 npm install
 ```
 
@@ -75,67 +75,122 @@ console.log("Confirmed:", signature);
 
 ## Loading your relayer wallet
 
-The relayer is your backend wallet that pays Solana network fees. Keep its private key secure — never expose it on the frontend.
+The relayer is your backend wallet that pays Solana network fees on behalf of your users. You need to load it into the SDK using your private key.
 
-### From a Solana CLI JSON file
+This guide uses the **base-58 private key method** — the simplest and most compatible approach, works with Phantom, Solflare, and any Solana wallet.
 
-The Solana CLI (`solana-keygen`) exports wallets as a JSON array of 64 bytes.
+---
 
-```js
-const fs = require("fs");
-const { LegionSDK } = require("legion-sdk");
+### Step 1 — Get your base-58 private key
 
-const walletJson = fs.readFileSync("/path/to/your/wallet.json", "utf8");
+**From Phantom:**
+1. Open Phantom wallet
+2. Click the hamburger menu (☰) top-left
+3. Click **Settings**
+4. Click **Security & Privacy**
+5. Click **Export Private Key**
+6. Enter your password
+7. Copy the key shown — it looks like a long random string e.g. `4xKpN7...`
 
-const legion = LegionSDK.fromWalletJSON({
-  rpcUrl: "https://api.mainnet-beta.solana.com",
-  relayerWalletJson: walletJson,  // the raw JSON string or parsed array
-  fee: { mint: "...", amount: 0.1, decimals: 6 },
-});
-```
+**From Solflare:**
+1. Open Solflare wallet
+2. Click **Settings** (bottom right)
+3. Click **Export Wallet**
+4. Choose **Private Key**
+5. Enter your password and copy the key
 
-`relayerWalletJson` accepts:
-- A raw JSON string: `"[12, 34, 56, ...]"`
-- An already-parsed `number[]` array
-- A `Uint8Array`
+---
 
-### From a base-58 private key
+### Step 2 — Create the wallet loader file
+
+In your project folder, create a new file called `load-wallet.js` and paste this code into it exactly:
 
 ```js
 const { LegionSDK } = require("legion-sdk");
 
 const legion = LegionSDK.fromPrivateKey({
   rpcUrl: "https://api.mainnet-beta.solana.com",
-  relayerPrivateKey: process.env.RELAYER_PRIVATE_KEY,  // base-58 string
-  fee: { mint: "...", amount: 0.1, decimals: 6 },
+  relayerPrivateKey: "PASTE_YOUR_PRIVATE_KEY_HERE",
+  fee: {
+    mint: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", // USDC — change to your token
+    amount: 0.01,
+    decimals: 6,
+  },
 });
+
+async function main() {
+  console.log("Relayer address:", legion.getRelayerAddress());
+  console.log("Relayer SOL balance:", await legion.getRelayerBalance(), "SOL");
+  console.log("Wallet loaded successfully.");
+}
+
+main().catch(console.error);
 ```
 
-### From a Keypair object directly
+Replace `PASTE_YOUR_PRIVATE_KEY_HERE` with the key you copied in Step 1. Keep the quotes around it.
+
+---
+
+### Step 3 — Run it to confirm it works
+
+```bash
+node load-wallet.js
+```
+
+You should see output like:
+
+```
+Relayer address: 7xKpN7...
+Relayer SOL balance: 0.05 SOL
+Wallet loaded successfully.
+```
+
+If you see your correct wallet address, the key loaded correctly and the SDK is ready to use.
+
+---
+
+### Step 4 — Move the key to an environment variable (recommended)
+
+Hardcoding the private key in a file is fine for local testing but you should use an environment variable before deploying anywhere.
+
+Create a file called `.env` in your project root:
+
+```
+RELAYER_PRIVATE_KEY=PASTE_YOUR_PRIVATE_KEY_HERE
+```
+
+Install dotenv:
+
+```bash
+npm install dotenv
+```
+
+Then update your code to read from the environment:
 
 ```js
-const { Keypair } = require("@solana/web3.js");
+require("dotenv").config();
 const { LegionSDK } = require("legion-sdk");
 
-const keypair = Keypair.fromSecretKey(Uint8Array.from([/* bytes */]));
-
-const legion = new LegionSDK({
+const legion = LegionSDK.fromPrivateKey({
   rpcUrl: "https://api.mainnet-beta.solana.com",
-  relayerKeypair: keypair,
+  relayerPrivateKey: process.env.RELAYER_PRIVATE_KEY,
+  fee: {
+    mint: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+    amount: 0.01,
+    decimals: 6,
+  },
 });
 ```
 
-### Generate a new wallet (for testing)
+Add `.env` to your `.gitignore` so it is never committed to Git:
 
-```js
-const { generateKeypair } = require("legion-sdk");
-
-const { keypair, publicKey, secretKeyJSON, secretKeyBase58 } = generateKeypair();
-
-console.log("Address:", publicKey);
-console.log("Save this JSON to a file:", secretKeyJSON);    // compatible with Solana CLI
-console.log("Or use this base-58 key:", secretKeyBase58);   // store in env var
+```bash
+echo ".env" >> .gitignore
 ```
+
+---
+
+> ⚠️ **Never share your private key. Never commit it to Git. Anyone who has it has full control of your wallet.**
 
 ---
 
@@ -429,7 +484,3 @@ node examples/01-free-relay.js
 ```
 
 ---
-
-## License
-
-MIT
