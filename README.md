@@ -106,7 +106,7 @@ This guide uses the **base-58 private key method** — the simplest and most com
 In your project folder, create a new file called `load-wallet.js` and paste this code into it exactly:
 
 ```js
-const { LegionSDK } = require("legion-sdk");
+const { LegionSDK } = require("./index");
 
 const legion = LegionSDK.fromPrivateKey({
   rpcUrl: "https://api.mainnet-beta.solana.com",
