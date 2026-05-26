@@ -1,6 +1,6 @@
 # Legion SDK
 
-**Gas abstraction for Solana.** Your backend wallet pays native SOL transaction fees on behalf of users. You optionally collect a fee in any SPL token — or make transactions completely free. Works for any transaction type: token transfers, prediction markets, DEX swaps, payment rails, position opens, NFT mints, program calls — anything.
+**Gas abstraction for Solana.** Your backend wallet pays native SOL transaction fees on behalf of users. You optionally collect a fee in any SPL token, or make transactions completely free. Works for any transaction type: token transfers, prediction markets, DEX swaps, payment rails, position opens, NFT mints, program calls, anything.
 
 ---
 
@@ -26,15 +26,11 @@ Everything is **atomic**: if the fee transfer fails, the whole transaction fails
 
 ## Installation
 
-```bash
-npm install legion-sdk
-```
-
-Or clone this repo directly:
+Clone this repo directly:
 
 ```bash
 git clone https://github.com/MELcodes99/LEGIONSDK-V2.git
-cd LEGIONSDK-V2
+cd Legion-SDK
 npm install
 ```
 
@@ -45,7 +41,7 @@ npm install
 ## Quick start
 
 ```js
-const { LegionSDK } = require("legion-sdk");
+const { LegionSDK } = require("./index");
 const { Keypair } = require("@solana/web3.js");
 
 // Load your relayer keypair (see Wallet section below)
@@ -169,7 +165,7 @@ Then update your code to read from the environment:
 
 ```js
 require("dotenv").config();
-const { LegionSDK } = require("legion-sdk");
+const { LegionSDK } = require("./index");
 
 const legion = LegionSDK.fromPrivateKey({
   rpcUrl: "https://api.mainnet-beta.solana.com",
@@ -453,7 +449,7 @@ const {
   exportKeypairToJSON,     // (keypair: Keypair) => string (Solana CLI format)
   exportKeypairToBase58,   // (keypair: Keypair) => string
   generateKeypair,         // () => { keypair, publicKey, secretKeyJSON, secretKeyBase58 }
-} = require("legion-sdk");
+} = require("./index");
 ```
 
 ---
@@ -484,3 +480,7 @@ node examples/01-free-relay.js
 ```
 
 ---
+
+## License
+
+MIT
